@@ -40,6 +40,7 @@ const userSchema = new Schema<IUser>({
     type: String,
     required: false,
     unique: true,
+    sparse: true,
   },
 
   otp: {

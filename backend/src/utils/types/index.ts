@@ -20,4 +20,7 @@ export interface IForgotPasswordMail {
   email: string;
   otp: string;
   expiresAt: Date;
+  email: string,
+  otp: string,
+  firstName: string;
 }

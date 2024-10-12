@@ -7,6 +7,7 @@ import { ForgotPasswordDTO } from "./dtos/forgotpassword.dto";
 import { forgotPasswordController } from "./controllers/forgot-password.conttoller";
 import { resetPasswordController } from "./controllers/reset-password.controller";
 
+
 const router = Router();
 
 router.post('/signup', validateBody(SignupDTO), signupController);
