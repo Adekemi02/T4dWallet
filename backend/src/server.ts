@@ -6,6 +6,8 @@ import cors from "cors";
 import { connectDB } from "./database/connections/db";
 import bodyParser from "body-parser";
 import authRouter from './auth/routes'
+import usersRouter from './users/user-route'
+
 
 
 const app = express();
@@ -19,6 +21,8 @@ connectDB();
 
 
 app.use('/api/v1/auth', authRouter)
+app.use('/api/v1/users', usersRouter)
+
 
 // Define a route
 app.get("/", (req, res) => {

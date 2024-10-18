@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import { errorHandler, successHandler } from "../../utils/helper.functions";
 import { SignupDTO } from "../dtos/signup.dto";
-import { signupService } from "../services/signup.service";
+import { signupService, verifyAccessService } from "../services/signup.service";
 
 export const signupController = async(req: Request, res: Response) => {
      try {
@@ -24,3 +24,16 @@ export const signupController = async(req: Request, res: Response) => {
           
      }
 }
+
+export const verifyAccessController = async(req: Request, res: Response) => {
+     const { id, code } = req.query;
+    try {
+      await verifyAccessService(id as string, code as string);
+      res.status(200).json({
+        success: true,
+        message: "Email verified successfully",
+      });
+    } catch (error: any) {
+     return errorHandler(res, error.message )
+    }
+  }

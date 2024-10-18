@@ -12,6 +12,7 @@ export interface IUser extends Document {
   image: string;
   created_at: Date;
   updated_at: Date;
+  isVerified: Boolean
 }
 
 const userSchema = new Schema<IUser>({
@@ -76,9 +77,17 @@ const userSchema = new Schema<IUser>({
      type: Date,
      required: false,
      default: Date.now(),
-  }
+  },
+  isVerified: { type: Boolean, default: false },
 }, {
   timestamps: { createdAt: 'created_at', updatedAt: 'updated_at' }
 });
+
+userSchema.methods.toJSON = function () {
+  const user = this.toObject();
+  delete user.password_hash;
+  delete user.otp;
+  return user;
+};
 
 export const User = mongoose.model<IUser>('User', userSchema);
