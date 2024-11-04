@@ -1,7 +1,6 @@
 import mongoose, { Schema, Document, Types } from 'mongoose';
 
 export interface IOtp extends Document {
-  userId: Types.ObjectId;
   code: string;
   expires_at: Date;
   failed_attempts?: number;
@@ -10,11 +9,6 @@ export interface IOtp extends Document {
 }
 
 const otpSchema = new Schema<IOtp>({
-  userId: {
-    type: Schema.Types.ObjectId,
-    required: true,
-    ref: "User",
-  },
   code: {
     type: String,
     required: true,

@@ -47,7 +47,9 @@ const userSchema = new Schema<IUser>({
   otp: {
     type: Schema.Types.ObjectId,
     ref: 'OTP',
-    required: true,
+    required: false,
+    default: null,
+    sparse: true,
   },
 
   status: {

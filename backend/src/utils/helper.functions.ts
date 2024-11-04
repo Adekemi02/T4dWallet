@@ -1,10 +1,10 @@
 import { Response, Request } from "express";
 import { IUser, User } from "../auth/models/user.model"
-import { IOTPResponse } from "./types";
+import { DecodedToken, IOTPResponse } from "./types";
 import { readFileSync } from "fs";
 import path from 'path';
-import { genSalt, hash } from "bcrypt";
-
+import { compare, genSalt, hash } from "bcrypt";
+import jwt from 'jsonwebtoken';
 
 /**
  * Sends a successful JSON response.
@@ -130,3 +130,49 @@ export async function hashPassword(password: string): Promise<string> {
           throw new Error('error occured while hashing password');
      };
 };
+
+export const isOTPExpired = (expiresAt: Date): boolean => {
+     return new Date() > expiresAt;
+};
+
+export const generateAccessToken = (userid: string): string => {
+     const secretKey = process.env.JWT_SECRET;
+ 
+     if (!secretKey) {
+         throw new Error('JWT_SECRET environment variable is not set.');
+     }
+ 
+     const signedToken = jwt.sign({ userid: userid }, secretKey, {
+         expiresIn: process.env.JWT_EXPIRES_IN,
+     });
+ 
+     return signedToken;
+ };
+
+ export const verifyAccessToken = (
+     token: string,
+     secret: string
+ ): DecodedToken | null => {
+     try {
+         const decoded = jwt.verify(token, secret) as DecodedToken;
+         return decoded;
+     } catch (error) {
+         console.error('Token verification failed:', error);
+         return null;
+     }
+ };
+
+ export async function isValidPassword(
+     passwordPlainText: string,
+     hashedPassword: string
+ ) {
+     try {
+         const isValid = await compare(passwordPlainText, hashedPassword);
+         console.log(isValid);
+ 
+         return isValid;
+     } catch (error) {
+         console.log(error);
+         throw new Error('failed comparison');
+     }
+ }

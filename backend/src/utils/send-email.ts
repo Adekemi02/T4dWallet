@@ -1,7 +1,6 @@
 import nodemailer, { SendMailOptions, Transporter } from "nodemailer";
 import { readEmailTemplate } from "./helper.functions";
 import { IForgotPasswordMail, ISignupMail } from "./types";
-import { ISignupMail } from "./types";
 
 
 /**

@@ -20,7 +20,12 @@ export interface IForgotPasswordMail {
   email: string;
   otp: string;
   expiresAt: Date;
-  email: string,
-  otp: string,
-  firstName: string;
+  // firstName: string;
+}
+
+
+export interface DecodedToken {
+  userid: string;
+  role: string;
+  exp: number;
 }

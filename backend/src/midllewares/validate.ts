@@ -35,7 +35,7 @@ export function validateBody<T extends object>(dto: new () => T) {
 }
 
  
- /**
+/**
  * Middleware to validate request parameters against a DTO (Data Transfer Object).
  *
  * This function transforms the request parameters into an instance of the specified DTO
@@ -47,21 +47,21 @@ export function validateBody<T extends object>(dto: new () => T) {
  * 
  * @returns A middleware function that processes the request.
  */
- export function validateParams<T extends ParamsDictionary>(dto: new () => T) {
-     return async (req: Request, res: Response, next: NextFunction) => {
-         const output = plainToInstance(dto, req.params);
-         const errors = await validate(output);
- 
-         if (errors.length > 0) {
-           const errorMessages = errors.map(err => {
-               return Object.values(err.constraints || {});
-           }).flat();
- 
-           return res.status(400).json({ errors: errorMessages });
-         } else {
-             req.params = output;
-             next();
-         }
-     };
- }
- 
+export function validateParams<T extends object>(dto: new () => T) {
+  return async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    const output = plainToInstance(dto, req.params);
+    const errors = await validate(output);
+
+    if (errors.length > 0) {
+      const errorMessages = errors.map(err => {
+        return Object.values(err.constraints || {});
+      }).flat();
+
+      res.status(400).json({ errors: errorMessages });
+      return
+    }
+
+    req.params = output as unknown as ParamsDictionary;
+    next();
+  };
+}

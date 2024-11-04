@@ -5,9 +5,9 @@ import { IOtp, OTP } from "../../models/otp.model";
 import { sendForgotPasswordMail } from "../../../utils/send-email";
 import { IForgotPasswordMail } from "../../../utils/types";
 import { User } from "../../models/user.model";
-import { TForgotPasswordPayload, TResetPasswordPayload } from "./types/passwords.types";
+import { TForgotPasswordPayload, TForgotPasswordResponse, TResetPasswordPayload } from "./types/passwords.types";
 
-export const forgotPasswordService = async (payload: TForgotPasswordPayload) => {
+export const forgotPasswordService = async (payload: TForgotPasswordPayload): Promise<TForgotPasswordResponse> => {
      try {
           const userExist = await findByEmail(payload);
 
@@ -21,7 +21,9 @@ export const forgotPasswordService = async (payload: TForgotPasswordPayload) => 
           };
 
           const otpId = await createOTP(otpPayload);
+
           userExist.otp = otpId._id as mongoose.Types.ObjectId;
+
           await userExist.save();
 
           const mailData: IForgotPasswordMail = {
@@ -33,9 +35,9 @@ export const forgotPasswordService = async (payload: TForgotPasswordPayload) => 
           await sendForgotPasswordMail(mailData);
 
           return {
-               message: "OTP sent successfully",
-               status: true,
-          };
+               otp: otp,
+               email: payload.email,
+          }
      } catch (error: any) {
           console.log('Error sending OTP: ', error);
           throw new Error(error.message || 'Error sending OTP');          
@@ -79,10 +81,7 @@ export const resetPasswordService = async (payload: TResetPasswordPayload) => {
 
           });
           
-          return { 
-               success: true, 
-               message: "Password reset successfully" 
-          };
+          return true;
      } catch (error: any) {
           console.error("Error during password reset: ", error);
         throw new Error(error.message || "Error resetting password");
