@@ -5,6 +5,8 @@ import { readFileSync } from "fs";
 import path from 'path';
 import { compare, genSalt, hash } from "bcrypt";
 import jwt from 'jsonwebtoken';
+import { ulid } from "ulid";
+import { IWallet, Wallet } from "../wallets/models/wallet.model";
 
 /**
  * Sends a successful JSON response.
@@ -60,6 +62,7 @@ export function errorHandler(res: Response, message: string, code: number = 500)
 export interface RequestWithUser extends Request {
      fileValidationError: any;
      user: IUser;
+     wallet: IWallet;
 };
 
 
@@ -137,42 +140,108 @@ export const isOTPExpired = (expiresAt: Date): boolean => {
 
 export const generateAccessToken = (userid: string): string => {
      const secretKey = process.env.JWT_SECRET;
- 
-     if (!secretKey) {
-         throw new Error('JWT_SECRET environment variable is not set.');
-     }
- 
-     const signedToken = jwt.sign({ userid: userid }, secretKey, {
-         expiresIn: process.env.JWT_EXPIRES_IN,
-     });
- 
-     return signedToken;
- };
 
- export const verifyAccessToken = (
+     if (!secretKey) {
+          throw new Error('JWT_SECRET environment variable is not set.');
+     }
+
+     const signedToken = jwt.sign({ userid: userid }, secretKey, {
+          expiresIn: process.env.JWT_EXPIRES_IN,
+     });
+
+     return signedToken;
+};
+
+export const verifyAccessToken = (
      token: string,
      secret: string
- ): DecodedToken | null => {
+): DecodedToken | null => {
      try {
-         const decoded = jwt.verify(token, secret) as DecodedToken;
-         return decoded;
+          const decoded = jwt.verify(token, secret) as DecodedToken;
+          return decoded;
      } catch (error) {
-         console.error('Token verification failed:', error);
-         return null;
+          console.error('Token verification failed:', error);
+          return null;
      }
- };
+};
 
- export async function isValidPassword(
+export async function isValidPassword(
      passwordPlainText: string,
      hashedPassword: string
- ) {
+) {
      try {
-         const isValid = await compare(passwordPlainText, hashedPassword);
-         console.log(isValid);
- 
-         return isValid;
+          const isValid = await compare(passwordPlainText, hashedPassword);
+          console.log(isValid);
+
+          return isValid;
      } catch (error) {
-         console.log(error);
-         throw new Error('failed comparison');
+          console.log(error);
+          throw new Error('failed comparison');
      }
+}
+
+export const generateULIDForEntity = (entityCodePrefix: string) => {
+     return entityCodePrefix + ulid();
+};
+
+// export const cloneObj = <T = object>(obj: T): T => structuredClone(obj);
+
+/**
+ * Clones a Mongoose document safely.
+ */
+export const cloneObj = (document: any) => {
+     if (document.toObject && typeof document.toObject === "function") {
+       // Convert Mongoose document to a plain object
+       return document.toObject();
+     }
+     // Use JSON methods for non-Mongoose objects
+     return JSON.parse(JSON.stringify(document));
+   };
+
+
+export function generateRandomNumber(length: number) {
+     let result = '';
+     const characters = '0123456789';
+     const charactersLength = characters.length;
+ 
+     for (let i = 0; i < length; i++) {
+         result += characters.charAt(
+             Math.floor(Math.random() * charactersLength)
+         );
+     }
+ 
+     return result;
  }
+
+ export const generateWalletId = async (): Promise<string> => {
+     let isUnique = false;
+     const id = generateRandomNumber(7);
+
+ 
+     do { 
+         const existingWallet = await Wallet.findOne({
+             wallet_id: id,
+         }).exec();
+         if (!existingWallet) {
+             isUnique = true;
+         }
+     } while (!isUnique);
+ 
+     return `110${id}`;
+ };
+
+ export function formatTransactionDate(date: Date): string {
+   
+     // Format the date as MM/DD/YYYY, HH:mm:ss AM/PM
+     const formattedDate = date.toLocaleString('en-US', {
+       hour12: true,
+       hour: '2-digit',
+       minute: '2-digit',
+       second: '2-digit',
+       month: '2-digit',
+       day: '2-digit',
+       year: 'numeric'
+     });
+   
+     return formattedDate;
+   }

@@ -1,12 +1,15 @@
-import { createOTP, createUser, findByEmail } from "../../database/queries/signup.queries";
+import { createOTP, createUser, findByEmail } from "../queries/signup.queries";
 import { IResendOTP, IResendOTPServiceResult, ISignupPayload, IVerifyOTP, IVerifyOTPServiceResult } from "../interfaces/signup.interface";
 import { generateAccessToken, generateOTP, hashPassword, isOTPExpired } from "../../utils/helper.functions";
 import { IOtp, OTP } from "../models/otp.model";
 import mongoose, { isValidObjectId } from "mongoose";
-import { sendSignUpMail } from "../../utils/send-email";
 import { ISignupMail } from "../../utils/types";
 import { IUser, User } from "../models/user.model";
 import bcrypt from "bcrypt"
+import { appEmitter } from "../../globals/events";
+import { WALLET_EVENTS } from "src/wallets/events/wallets.events";
+import { IMailData } from "../../utils/emails/types";
+import { sendEMail } from "../../utils/emails/send-email";
 
 export const signupService = async (payload: ISignupPayload): Promise<IUser> => {
      try {
@@ -36,13 +39,14 @@ export const signupService = async (payload: ISignupPayload): Promise<IUser> => 
 
           const newUser = await createUser(createPayload)
 
-          const mailData: ISignupMail = {
+          const mailData: IMailData = {
+               templateKey: 'confirmEmail',
                email: payload.email,
-               otp: otp,
-               firstName: payload.firstName,
+               placeholders: {OTP: otp, firstname: payload.firstName},
+               subject: 'Email Verification'
           }
 
-          await sendSignUpMail(mailData);
+          await sendEMail(mailData);
 
           return newUser;
      } catch (error: any) {
@@ -116,5 +120,13 @@ export const resendOTPService = async (data: IResendOTP): Promise<IResendOTPServ
 
      const updateUser = await User.findOneAndUpdate({email}, {otp: otpId.id}, {new: true});
 
+     const mailData: IMailData = {
+          templateKey: 'otpEmail',
+          email: email,
+          placeholders: {OTP: otp, firstname: updateUser.first_name},
+          subject: 'Email Verification'
+     }
+
+     await sendEMail(mailData);
      return { otp };
 }

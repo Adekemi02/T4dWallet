@@ -1,6 +1,6 @@
-import { IOtp, OTP } from "../../auth/models/otp.model";
-import { ICreateUserData } from "../../auth/interfaces/signup.interface";
-import { IUser, User } from "../../auth/models/user.model"
+import { IOtp, OTP } from "../models/otp.model";
+import { ICreateUserData } from "../interfaces/signup.interface";
+import { IUser, User } from "../models/user.model"
 
 export const findByEmail = async ({ email }: { email: string }): Promise<IUser> => {
      try {

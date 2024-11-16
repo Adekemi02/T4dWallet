@@ -1,11 +1,12 @@
 import mongoose from "mongoose";
-import { createOTP, findByEmail } from "../../../database/queries/signup.queries";
+import { createOTP, findByEmail } from "../../queries/signup.queries";
 import { generateOTP, hashPassword } from "../../../utils/helper.functions";
 import { IOtp, OTP } from "../../models/otp.model";
-import { sendForgotPasswordMail } from "../../../utils/send-email";
+import { sendEMail } from "../../../utils/emails/send-email";
 import { IForgotPasswordMail } from "../../../utils/types";
 import { User } from "../../models/user.model";
 import { TForgotPasswordPayload, TForgotPasswordResponse, TResetPasswordPayload } from "./types/passwords.types";
+import { IMailData } from "../../../utils/emails/types";
 
 export const forgotPasswordService = async (payload: TForgotPasswordPayload): Promise<TForgotPasswordResponse> => {
      try {
@@ -25,14 +26,15 @@ export const forgotPasswordService = async (payload: TForgotPasswordPayload): Pr
           userExist.otp = otpId._id as mongoose.Types.ObjectId;
 
           await userExist.save();
+          
+          const mailData: IMailData = {
+               templateKey: 'forgotPasswordEmail',
+               email: payload.email,
+               placeholders: {OTP: otp, firstname: userExist.first_name},
+               subject: 'Password Reset Request'
+          }
 
-          const mailData: IForgotPasswordMail = {
-               email: payload.email,    
-               otp: otp,
-               expiresAt: expiresAt
-          };
-
-          await sendForgotPasswordMail(mailData);
+          await sendEMail(mailData);
 
           return {
                otp: otp,

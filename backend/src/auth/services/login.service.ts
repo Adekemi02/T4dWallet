@@ -1,6 +1,6 @@
 import { generateAccessToken, isValidPassword } from "../../utils/helper.functions";
 import { ILogin, ILoginServiceResult } from "../interfaces/login.interface";
-import { findByEmail } from "../../database/queries/signup.queries";
+import { findByEmail } from "../queries/signup.queries";
 
 export const loginService = async (data: ILogin): Promise<ILoginServiceResult> => {
      const { password, email } = data;

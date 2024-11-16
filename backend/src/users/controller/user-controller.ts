@@ -48,4 +48,15 @@ export class UserController {
       return errorHandler(res, "Failed to delete profile picture",)
     }
   }
+
+  static async getCurrentUser(req: RequestWithUser, res: Response) {
+    try {
+      const currentUser = await UserService.getUserById(req.user.id);
+
+      return successHandler(res, "Current user retrieved successfully", currentUser)
+
+    } catch (error) {
+      return errorHandler(res, "Failed to retrieve current user",)
+    }
+  }
 }

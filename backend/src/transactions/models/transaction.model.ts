@@ -1,4 +1,4 @@
-import mongoose, { Schema, Document } from "mongoose";
+import mongoose, { Schema, Document, Types } from "mongoose";
 import {
   TransactionCategory,
   TransactionStatus,
@@ -9,9 +9,10 @@ export interface ITransaction extends Document {
   amount: number;
   transaction_category: TransactionCategory;
   transaction_status: TransactionStatus;
-  balance_before: number;
-  balance_after: number;
+  balance_before: Types.Decimal128;
+  balance_after: Types.Decimal128;
   charge: number;
+  currency: string;
   description?: string;
   transaction_reference: string;
   wallet: mongoose.Types.ObjectId;
@@ -42,16 +43,21 @@ const transactionSchema = new Schema<ITransaction>(
       required: true,
     },
     balance_before: {
-      type: Number,
+      type: mongoose.Schema.Types.Decimal128,
       required: true,
     },
     balance_after: {
-      type: Number,
+      type: mongoose.Schema.Types.Decimal128,
       required: true,
     },
     charge: {
       type: Number,
       required: true,
+      default: 0.0,
+    },
+    currency: {
+      type: String,
+      default: 'NGN',
     },
     description: {
       type: String,
