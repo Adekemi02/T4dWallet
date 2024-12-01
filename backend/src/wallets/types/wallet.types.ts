@@ -17,3 +17,10 @@ export interface IGetUserWalletResponse {
      balance: number,
      status: string,
 }
+
+export interface IReactivateWalletResponse {
+     wallet_id: string;
+     status: string;
+     balance: number;
+     last_status_change_date: Date;
+}
