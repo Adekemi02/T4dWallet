@@ -8,6 +8,7 @@ export enum TransactionCategory {
   CURRENCY_EXCHANGE = "currency exchange",
   WALLET_FUNDING = "wallet funding",
   TRANSFER_CHARGE = 'charge',
+  WITHDRAWAL = 'funds withdrawal',
 }
 
 // export type TCreateTransactionInput = Omit<

@@ -4,7 +4,7 @@ import { creditWalletService, debitWalletService } from "../wallet.service";
 import { ITransferChargeResponse, ITransferPayload } from "./types/transfer.types";
 import { createTransaction } from "../../../transactions/services/transaction.service";
 import { TransactionCategory } from "../../../transactions/interfaces/transaction.interface";
-import { formatTransactionDate, generateULIDForEntity } from "../../../utils/helper.functions";
+import { formatNumberWithComma, formatTransactionDate, generateULIDForEntity } from "../../../utils/helper.functions";
 import { IWalletStates } from "../../../wallets/types/wallet.types";
 import { IMailData } from "../../../utils/emails/types";
 import { sendEMail } from "../../../utils/emails/send-email";
@@ -76,7 +76,7 @@ export const transferFunds = async (payload: ITransferPayload, user: IUser,): Pr
       user: user.id,
       currency: 'NGN',
       transaction_status: 'Successful',
-    });
+    }, {session});
 
     // Optionally, create a credit transaction for the recipient
     const recipientTransaction = await createTransaction({
@@ -96,7 +96,7 @@ export const transferFunds = async (payload: ITransferPayload, user: IUser,): Pr
       user: recipient.id,
       currency: 'NGN',
       transaction_status: 'Successful',
-    });
+    }, {session});
 
     const transactionDate = formatTransactionDate(new Date());
 
@@ -105,6 +105,8 @@ export const transferFunds = async (payload: ITransferPayload, user: IUser,): Pr
       sender: user,
       recipientWalletId: payload.receipientId,
       amount: payload.amount,
+      creditorBalance: parseFloat(debitUserWallet.curr_wallet.balance.toString()),
+      recipientBalance: parseFloat(creditRecipientWallet.curr_wallet.balance.toString()),
       charge: charge,
       transactionRef: transactionRef,
       transactionDate: transactionDate,
@@ -140,9 +142,10 @@ appEmitter.on(WALLET_EVENTS.FUNDS_TRANSFERRED, async (data) => {
       email: data.sender.email,
       placeholders: {
         firstname: data.sender.first_name,
-        amount: data.amount.toString(),
+        amount: formatNumberWithComma(data.amount),
         TransactionID: data.transactionRef,
         charge: data.charge.toString(),
+        Balance: formatNumberWithComma(data.creditorBalance),
         RecipientName: `${recipient.first_name} ${recipient.last_name}`,
         RecipientWalletID: data.recipientWalletId,
         DateTime: data.transactionDate,
@@ -157,12 +160,13 @@ appEmitter.on(WALLET_EVENTS.FUNDS_TRANSFERRED, async (data) => {
       email: recipient.email,
       placeholders: {
         firstname: recipient.first_name,
-        amount: data.amount.toString(),
+        amount: formatNumberWithComma(data.amount),
         SenderName: `${data.sender.first_name} ${data.sender.last_name}`,
         TransactionID: data.transactionRef,
+        Balance: formatNumberWithComma(data.recipientBalance),
         DateTime: data.transactionDate,
       },
-      subject: 'Transfer Successful',
+      subject: 'Credit Alert',
     };
 
     await sendEMail(mailData2);

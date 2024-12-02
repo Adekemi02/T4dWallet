@@ -1,4 +1,4 @@
-export type EmailTemplateKeys = 'confirmEmail' | 'forgotPasswordEmail' | 'otpEmail' | 'transferEmail' | 'creditEmail' | 'fundEmail';
+export type EmailTemplateKeys = 'confirmEmail' | 'forgotPasswordEmail' | 'otpEmail' | 'transferEmail' | 'creditEmail' | 'fundEmail' | 'debitEmail';
 
 export interface IEmailPayload {
      [key: string]: string;

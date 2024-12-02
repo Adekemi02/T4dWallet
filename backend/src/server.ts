@@ -8,7 +8,7 @@ import bodyParser from "body-parser";
 import authRouter from './auth/routes'
 import usersRouter from './users/user-route'
 import walletRouter from './wallets/routes'
-import { generateWalletId } from "./utils/helper.functions";
+import { formatNumberWithComma, generateWalletId } from "./utils/helper.functions";
 
 
 

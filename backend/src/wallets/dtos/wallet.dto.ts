@@ -1,6 +1,6 @@
 import { IsNotEmpty, IsNumber, IsOptional, IsString, MinLength } from "class-validator";
 
-export class CreditWalletDTO {
+export class WithdrawFundDTO {
      @IsNotEmpty()
      @IsNumber()
      amount: number;

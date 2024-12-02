@@ -5,6 +5,7 @@ export interface IWallet extends Document {
   balance: Types.Decimal128;
   prev_balance: Types.Decimal128;
   wallet_pin: string;
+  wallet_pin_changed: string;
   status: "ACTIVE" | "INACTIVE" | "SUSPENDED";
   user: mongoose.Types.ObjectId;
   created_at: Date;
@@ -32,6 +33,11 @@ const walletSchema = new Schema<IWallet>(
     },
 
     wallet_pin: {
+      type: String,
+      required: false,
+    },
+
+    wallet_pin_changed: {
       type: String,
       required: false,
     },

@@ -11,6 +11,8 @@ export interface IFundWalletPayload {
      description: string;
 }
 
+export interface IWithdrawFundPayload extends Pick<IFundWalletPayload, 'amount'> {}
+
 export interface IGetUserWalletResponse {
      _id: string,
      wallet_id: string,

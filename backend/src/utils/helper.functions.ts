@@ -245,3 +245,11 @@ export function generateRandomNumber(length: number) {
    
      return formattedDate;
    }
+
+   // Function to format number with commas
+   export function formatNumberWithComma(number: number): string {
+     return number.toLocaleString('en-US', {
+       minimumFractionDigits: 2,
+       maximumFractionDigits: 2,
+     });
+   }
