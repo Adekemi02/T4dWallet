@@ -57,7 +57,7 @@ const transactionSchema = new Schema<ITransaction>(
     },
     currency: {
       type: String,
-      default: 'NGN',
+      default: "NGN",
     },
     description: {
       type: String,

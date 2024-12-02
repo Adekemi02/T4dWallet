@@ -1,4 +1,4 @@
-import mongoose, { Schema, Document } from 'mongoose';
+import mongoose, { Schema, Document } from "mongoose";
 
 export interface IUser extends Document {
   first_name: string;
@@ -6,84 +6,87 @@ export interface IUser extends Document {
   email: string;
   password_hash: string;
   phone_number: string;
-  status: 'ACTIVE' | 'INACTIVE';
+  status: "ACTIVE" | "INACTIVE";
   address: string;
-  otp:  mongoose.Types.ObjectId;
+  otp: mongoose.Types.ObjectId;
   image: string;
   created_at: Date;
   updated_at: Date;
-  isVerified: Boolean
+  isVerified: Boolean;
 }
 
-const userSchema = new Schema<IUser>({
-  first_name: {
-    type: String,
-    required: true,
-  },
-  
-  last_name: {
-    type: String,
-    required: true,
-  },
+const userSchema = new Schema<IUser>(
+  {
+    first_name: {
+      type: String,
+      required: true,
+    },
 
-  email: {
-    type: String,
-    required: true,
-    unique: true,
-  },
+    last_name: {
+      type: String,
+      required: true,
+    },
 
-  password_hash: {
-    type: String,
-    required: true,
-  },
+    email: {
+      type: String,
+      required: true,
+      unique: true,
+    },
 
-  phone_number: {
-    type: String,
-    required: false,
-    unique: true,
-    sparse: true,
-  },
+    password_hash: {
+      type: String,
+      required: true,
+    },
 
-  otp: {
-    type: Schema.Types.ObjectId,
-    ref: 'OTP',
-    required: false,
-    default: null,
-    sparse: true,
-  },
+    phone_number: {
+      type: String,
+      required: false,
+      unique: true,
+      sparse: true,
+    },
 
-  status: {
-    type: String,
-    enum: [ 'ACTIVE', 'INACTIVE'],
-    default: 'ACTIVE',
-    required: true,
-  },
+    otp: {
+      type: Schema.Types.ObjectId,
+      ref: "OTP",
+      required: false,
+      default: null,
+      sparse: true,
+    },
 
-  address: {
-    type: String,
-    required: false,
-  },
+    status: {
+      type: String,
+      enum: ["ACTIVE", "INACTIVE"],
+      default: "ACTIVE",
+      required: true,
+    },
 
-  image: {
-    type: String,
-    required: false,
-  },
+    address: {
+      type: String,
+      required: false,
+    },
 
-  created_at: {
-     type: Date,
-     required: false,
-     default: Date.now(),
-  },
+    image: {
+      type: String,
+      required: false,
+    },
 
-  updated_at: {
-     type: Date,
-     required: false,
-     default: Date.now(),
+    created_at: {
+      type: Date,
+      required: false,
+      default: Date.now(),
+    },
+
+    updated_at: {
+      type: Date,
+      required: false,
+      default: Date.now(),
+    },
+    isVerified: { type: Boolean, default: false },
   },
-  isVerified: { type: Boolean, default: false },
-}, {
-  timestamps: { createdAt: 'created_at', updatedAt: 'updated_at' }
-});
+  {
+    timestamps: { createdAt: "created_at", updatedAt: "updated_at" },
+  }
+);
 
 userSchema.methods.toJSON = function () {
   const user = this.toObject();
@@ -92,4 +95,4 @@ userSchema.methods.toJSON = function () {
   return user;
 };
 
-export const User = mongoose.model<IUser>('User', userSchema);
+export const User = mongoose.model<IUser>("User", userSchema);

@@ -1,4 +1,4 @@
-import mongoose, { Schema, Document, Types } from 'mongoose';
+import mongoose, { Schema, Document, Types } from "mongoose";
 
 export interface IOtp extends Document {
   code: string;
@@ -8,34 +8,37 @@ export interface IOtp extends Document {
   updated_at: Date;
 }
 
-const otpSchema = new Schema<IOtp>({
-  code: {
-    type: String,
-    required: true,
-  },
-  expires_at: {
-    type: Date,
-    required: true,
-  },
-  failed_attempts: {
-    type: Number,
-    default: 0,
-  },
+const otpSchema = new Schema<IOtp>(
+  {
+    code: {
+      type: String,
+      required: true,
+    },
+    expires_at: {
+      type: Date,
+      required: true,
+    },
+    failed_attempts: {
+      type: Number,
+      default: 0,
+    },
 
-  created_at: {
-    type: Date,
-    required: false,
-    default: Date.now(),
-    expires: 1800
- },
+    created_at: {
+      type: Date,
+      required: false,
+      default: Date.now(),
+      expires: 1800,
+    },
 
- updated_at: {
-    type: Date,
-    required: false,
-    default: Date.now(),
- }
-}, {
-  timestamps: { createdAt: 'created_at', updatedAt: 'updated_at' }
-});
+    updated_at: {
+      type: Date,
+      required: false,
+      default: Date.now(),
+    },
+  },
+  {
+    timestamps: { createdAt: "created_at", updatedAt: "updated_at" },
+  }
+);
 
-export const OTP = mongoose.model<IOtp>('Otp', otpSchema);
+export const OTP = mongoose.model<IOtp>("Otp", otpSchema);

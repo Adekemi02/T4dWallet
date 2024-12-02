@@ -1,49 +1,94 @@
 import { Request, Response } from "express";
-import { errorHandler, RequestWithUser, successHandler } from "../../utils/helper.functions";
-import { fundWalletService, getUserWallet, withdrawFundService } from "../services/wallet.service";
-import { FundWalletDTO, WithdrawFundDTO } from "../dtos/wallet.dto";
-import { IGetUserWalletResponse } from "../types/wallet.types";
+import {
+  errorHandler,
+  RequestWithUser,
+  successHandler,
+} from "../../utils/helper.functions";
+import {
+  fundWalletService,
+  getUserWallet,
+  getWalletById,
+  withdrawFundService,
+} from "../services/wallet.service";
+import {
+  FundWalletDTO,
+  ResolveWalletDTO,
+  WithdrawFundDTO,
+} from "../dtos/wallet.dto";
+import {
+  IGetUserWalletResponse,
+  IResolveWalletResponse,
+} from "../types/wallet.types";
 
-export const fundWalletController = async(req: RequestWithUser, res: Response) => {
-     try {
-          const data: FundWalletDTO = req.body;
-          const fundedWallet = await fundWalletService( data, req.user)
+export const fundWalletController = async (
+  req: RequestWithUser,
+  res: Response
+) => {
+  try {
+    const data: FundWalletDTO = req.body;
+    const fundedWallet = await fundWalletService(data, req.user);
 
-          return successHandler(res, 'Wallet funded successfully', {});
+    return successHandler(res, "Wallet funded successfully", {});
+  } catch (error: any) {
+    console.log(error);
+    return errorHandler(res, error.message || "could not fund wallet");
+  }
+};
+export const withdrawFundsController = async (
+  req: RequestWithUser,
+  res: Response
+) => {
+  try {
+    const data: WithdrawFundDTO = req.body;
+    const fundedWallet = await withdrawFundService(data, req.user);
 
-     } catch (error: any) {
-          console.log(error);
-        return errorHandler(res, error.message ||'could not fund wallet');
-     }
-}
-export const withdrawFundsController = async(req: RequestWithUser, res: Response) => {
-     try {
-          const data: WithdrawFundDTO = req.body;
-          const fundedWallet = await withdrawFundService( data, req.user)
+    return successHandler(res, "Withdrawal successful", {});
+  } catch (error: any) {
+    console.log(error);
+    return errorHandler(res, error.message || "Could not make withdrawal");
+  }
+};
 
-          return successHandler(res, 'Withdrawal successful', {});
+export const getUserWalletController = async (
+  req: RequestWithUser,
+  res: Response
+) => {
+  try {
+    const wallet = await getUserWallet(req.user.id);
 
-     } catch (error: any) {
-          console.log(error);
-        return errorHandler(res, error.message ||'Could not make withdrawal');
-     }
-}
+    const details: IGetUserWalletResponse = {
+      _id: wallet.id,
+      wallet_id: wallet.wallet_id,
+      balance: parseFloat(wallet.balance.toString()),
+      status: wallet.status,
+    };
 
-export const getUserWalletController = async(req: RequestWithUser, res: Response) => {
-     try {
-          const wallet = await getUserWallet(req.user.id)
+    return successHandler(res, "Wallet retrieved successfully", details);
+  } catch (error: any) {
+    console.log(error);
+    return errorHandler(res, error.message || "could not get user wallet");
+  }
+};
 
-          const details: IGetUserWalletResponse = {
-               _id: wallet.id,
-               wallet_id: wallet.wallet_id,
-               balance: parseFloat(wallet.balance.toString()),
-               status: wallet.status,
-          }
+export const resolveWalletController = async (
+  req: RequestWithUser,
+  res: Response
+) => {
+  try {
+    const data: ResolveWalletDTO = req.body;
 
-          return successHandler(res, 'Wallet funded successfully', details);
+    const wallet = await getWalletById(data.walletId);
 
-     } catch (error: any) {
-          console.log(error);
-        return errorHandler(res, error.message || 'could not get user wallet');
-     }
-}
+    const details: IResolveWalletResponse = {
+      _id: wallet.id,
+      wallet_id: wallet.wallet_id,
+      walletName: wallet.wallet_name,
+      status: wallet.status,
+    };
+
+    return successHandler(res, "Wallet resolved successfully", details);
+  } catch (error: any) {
+    console.log(error);
+    return errorHandler(res, error.message || "could not resolve wallet");
+  }
+};

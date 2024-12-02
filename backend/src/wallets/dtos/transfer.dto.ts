@@ -1,17 +1,22 @@
-import { IsNotEmpty, IsNumber, IsOptional, MinLength, IsString } from "class-validator";
+import {
+  IsNotEmpty,
+  IsNumber,
+  IsOptional,
+  MinLength,
+  IsString,
+} from "class-validator";
 
 export class TransferFundsDTO {
-     @IsNotEmpty()
-     @IsNumber()
-     amount: number;
+  @IsNotEmpty()
+  @IsNumber()
+  amount: number;
 
-     @MinLength(4)
-     @IsString()
-     receipientId: string;
+  @MinLength(4)
+  @IsString()
+  receipientId: string;
 
-     @IsOptional()
-     @MinLength(4)
-     @IsString()
-     description: string;
-     
-   }
+  @IsOptional()
+  @MinLength(4)
+  @IsString()
+  description: string;
+}
