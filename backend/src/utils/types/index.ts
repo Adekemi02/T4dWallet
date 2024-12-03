@@ -1,10 +1,9 @@
 export const entitityCodePrefixes = {
-     USER: 'USER-', 
-     WALLET: 'WAL-',
-     TRANSACTION_REF: 'TXN-',
-   };
+  USER: "USER-",
+  WALLET: "WAL-",
+  TRANSACTION_REF: "TXN-",
+};
 
-   
 export interface IOTPResponse {
   otp: string;
   expiresAt: Date;
@@ -22,7 +21,6 @@ export interface IForgotPasswordMail {
   expiresAt: Date;
   // firstName: string;
 }
-
 
 export interface DecodedToken {
   userid: string;

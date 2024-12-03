@@ -5,8 +5,12 @@ export interface IWallet extends Document {
   balance: Types.Decimal128;
   prev_balance: Types.Decimal128;
   wallet_pin: string;
+  owner_fullname: string;
+  wallet_name: string;
+  wallet_pin_changed: boolean;
   status: "ACTIVE" | "INACTIVE" | "SUSPENDED";
   user: mongoose.Types.ObjectId;
+  wallet_pin_next_change: Date;
   created_at: Date;
   updated_at: Date;
 }
@@ -22,17 +26,37 @@ const walletSchema = new Schema<IWallet>(
     balance: {
       type: mongoose.Schema.Types.Decimal128,
       required: true,
-      default: mongoose.Types.Decimal128.fromString('0.00'),
+      default: mongoose.Types.Decimal128.fromString("0.00"),
     },
 
     prev_balance: {
       type: mongoose.Schema.Types.Decimal128,
       required: false,
-      default: mongoose.Types.Decimal128.fromString('0.00'),
+      default: mongoose.Types.Decimal128.fromString("0.00"),
     },
 
     wallet_pin: {
       type: String,
+      required: false,
+    },
+
+    owner_fullname: {
+      type: String,
+      required: true,
+    },
+
+    wallet_name: {
+      type: String,
+      required: true,
+    },
+
+    wallet_pin_changed: {
+      type: Boolean,
+      required: false,
+    },
+
+    wallet_pin_next_change: {
+      type: Date,
       required: false,
     },
 
@@ -45,7 +69,7 @@ const walletSchema = new Schema<IWallet>(
 
     user: {
       type: Schema.Types.ObjectId,
-      ref: 'User',
+      ref: "User",
       required: true,
     },
   },

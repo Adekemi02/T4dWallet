@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -12,6 +13,7 @@
             margin: 0;
             padding: 0;
         }
+
         .email-container {
             max-width: 600px;
             margin: 20px auto;
@@ -20,16 +22,19 @@
             border-radius: 8px;
             overflow: hidden;
         }
+
         .header {
             background-color: #4CAF50;
             color: white;
             text-align: center;
             padding: 20px 10px;
         }
+
         .content {
             padding: 20px;
             line-height: 1.6;
         }
+
         .transaction-details {
             background-color: #f9f9f9;
             border: 1px solid #ddd;
@@ -37,6 +42,7 @@
             border-radius: 5px;
             margin: 20px 0;
         }
+
         .footer {
             text-align: center;
             padding: 15px 10px;
@@ -44,24 +50,33 @@
             font-size: 12px;
             color: #666;
         }
+
         a {
             color: #4CAF50;
             text-decoration: none;
         }
+
         a:hover {
             text-decoration: underline;
         }
+
         .email-link {
             font-size: 15px;
             text-transform: lowercase;
         }
+
         .small-text {
             font-size: 14px;
             color: #999;
             text-align: center;
         }
+        .help {
+            margin-top: 30px;
+            font-size: 15px;
+        }
     </style>
 </head>
+
 <body>
     <div class="email-container">
         <!-- Header -->
@@ -73,18 +88,39 @@
         <div class="content">
             <p>Dear <strong>{{firstname}}</strong>,</p>
             <p>You have just received ₦{{amount}} from {{SenderName}}. Below are the details of the transaction:</p>
-            
+
             <div class="transaction-details">
-                <p><strong>Transaction ID:</strong> {{TransactionID}}</p>
-                <p><strong>Amount:</strong> ₦{{amount}}</p>
-                <p><strong>Transaction Type:</strong> Credit</p>
-                <p><strong>Sender's Name:</strong> {{SenderName}}</p>
-                <p><strong>Date & Time:</strong> {{DateTime}}</p>
+                <table style="width: 100%; border-collapse: collapse;">
+                    <tr>
+                        <td style="padding: 5px; text-align: left"><strong>Transaction ID:</strong></td>
+                        <td style="padding: 5px; text-align: right;">{{TransactionID}}</td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 5px; text-align: left"><strong>Amount:</strong></td>
+                        <td style="padding: 5px; text-align: right;">₦{{amount}}</td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 5px; text-align: left"><strong>Transaction Type:</strong></td>
+                        <td style="padding: 5px; text-align: right;">Credit</td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 5px; text-align: left"><strong>Sender's Name:</strong></td>
+                        <td style="padding: 5px; text-align: right;">{{SenderName}}</td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 5px; text-align: left"><strong>Available Balance:</strong></td>
+                        <td style="padding: 5px; text-align: right;">{{Balance}}</td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 5px; text-align: left"><strong>Date & Time:</strong></td>
+                        <td style="padding: 5px; text-align: right;">{{DateTime}}</td>
+                    </tr>
+                </table>
             </div>
 
-            <p>Thank you for using our service. If you have any questions or need further assistance, please don’t hesitate to contact us.</p>
-
-            <p>If you need help, feel free to contact us at <a href="mailto:td4wallet@gmail.com" class="email-link">td4wallet@gmail.com</a></p>
+            <p class="help">Thank you for using our service. If you have any questions or need further assistance, please don’t
+                hesitate to contact us at <a href="mailto:td4wallet@gmail.com"
+                class="email-link">td4wallet@gmail.com</a></p>
         </div>
 
         <!-- Footer -->
@@ -96,4 +132,5 @@
         </div>
     </div>
 </body>
+
 </html>

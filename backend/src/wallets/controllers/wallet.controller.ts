@@ -1,62 +1,95 @@
 import { Request, Response } from "express";
-import { errorHandler, RequestWithUser, successHandler } from "../../utils/helper.functions";
-import { creditWalletService, debitWalletService, fundWalletService, getUserWallet } from "../services/wallet.service";
-import { CreditWalletDTO, FundWalletDTO } from "../dtos/wallet.dto";
-import { IGetUserWalletResponse } from "../types/wallet.types";
+import {
+  errorHandler,
+  RequestWithUser,
+  successHandler,
+} from "../../utils/helper.functions";
+import {
+  fundWalletService,
+  getUserWallet,
+  getWalletById,
+  withdrawFundService,
+} from "../services/wallet.service";
+import {
+  FundWalletDTO,
+  ResolveWalletDTO,
+  WithdrawFundDTO,
+} from "../dtos/wallet.dto";
+import {
+  IGetUserWalletResponse,
+  IResolveWalletResponse,
+} from "../types/wallet.types";
 
-export const creditWalletController = async(req: RequestWithUser, res: Response) => {
-     try {
-          const data: CreditWalletDTO = req.body;
-          const creditWallet = await creditWalletService(req.user.id, data.amount)
+export const fundWalletController = async (
+  req: RequestWithUser,
+  res: Response
+) => {
+  try {
+    const data: FundWalletDTO = req.body;
+    const fundedWallet = await fundWalletService(data, req.user);
 
-          return successHandler(res, 'Wallet credited successfully', {});
+    return successHandler(res, "Wallet funded successfully", {});
+  } catch (error: any) {
+    console.log(error);
+    return errorHandler(res, error.message || "could not fund wallet");
+  }
+};
+export const withdrawFundsController = async (
+  req: RequestWithUser,
+  res: Response
+) => {
+  try {
+    const data: WithdrawFundDTO = req.body;
+    const fundedWallet = await withdrawFundService(data, req.user);
 
-     } catch (error: any) {
-          console.log(error);
-        return errorHandler(res, error.message);
-     }
+    return successHandler(res, "Withdrawal successful", {});
+  } catch (error: any) {
+    console.log(error);
+    return errorHandler(res, error.message || "Could not make withdrawal");
+  }
 };
 
-export const debitWalletController = async(req: RequestWithUser, res: Response) => {
-     try {
-          const data: CreditWalletDTO = req.body;
-          const debitWallet = await debitWalletService(req.user, data.amount)
+export const getUserWalletController = async (
+  req: RequestWithUser,
+  res: Response
+) => {
+  try {
+    const wallet = await getUserWallet(req.user.id);
 
-          return successHandler(res, 'Wallet debited successfully', {});
+    const details: IGetUserWalletResponse = {
+      _id: wallet.id,
+      wallet_id: wallet.wallet_id,
+      wallet_name: wallet.wallet_name,
+      balance: parseFloat(wallet.balance.toString()),
+      status: wallet.status,
+    };
 
-     } catch (error: any) {
-          console.log(error);
-        return errorHandler(res, error.message);
-     }
-}
-export const fundWalletController = async(req: RequestWithUser, res: Response) => {
-     try {
-          const data: FundWalletDTO = req.body;
-          const fundedWallet = await fundWalletService( data, req.user)
+    return successHandler(res, "Wallet retrieved successfully", details);
+  } catch (error: any) {
+    console.log(error);
+    return errorHandler(res, error.message || "could not get user wallet");
+  }
+};
 
-          return successHandler(res, 'Wallet funded successfully', {});
+export const resolveWalletController = async (
+  req: RequestWithUser,
+  res: Response
+) => {
+  try {
+    const data: ResolveWalletDTO = req.body;
 
-     } catch (error: any) {
-          console.log(error);
-        return errorHandler(res, error.message ||'could not fund wallet');
-     }
-}
+    const wallet = await getWalletById(data.walletId);
 
-export const getUserWalletController = async(req: RequestWithUser, res: Response) => {
-     try {
-          const wallet = await getUserWallet(req.user.id)
+    const details: IResolveWalletResponse = {
+      _id: wallet.id,
+      wallet_id: wallet.wallet_id,
+      walletName: wallet.wallet_name,
+      status: wallet.status,
+    };
 
-          const details: IGetUserWalletResponse = {
-               _id: wallet.id,
-               wallet_id: wallet.wallet_id,
-               balance: parseFloat(wallet.balance.toString()),
-               status: wallet.status,
-          }
-
-          return successHandler(res, 'Wallet funded successfully', details);
-
-     } catch (error: any) {
-          console.log(error);
-        return errorHandler(res, error.message || 'could not get user wallet');
-     }
-}
+    return successHandler(res, "Wallet resolved successfully", details);
+  } catch (error: any) {
+    console.log(error);
+    return errorHandler(res, error.message || "could not resolve wallet");
+  }
+};
