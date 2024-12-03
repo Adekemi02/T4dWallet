@@ -1,10 +1,12 @@
 export interface ITransferPayload {
-     receipientId: string;
-     amount: number;
-     description?: string
+  receipientId: string;
+  amount: number;
+  wallet_pin: string;
+  description?: string;
 }
 
 export interface ITransferChargeResponse {
-     newAmountWithCharge: number;
-     charge: number;
+  newAmountWithCharge: number;
+  charge: number;
+  creditCharge: number;
 }

@@ -5,9 +5,18 @@ import { authorizeUser } from "../midllewares/auth-middleware";
 
 const router = Router();
 
-router.put("/:id", authorizeUser, UserController.editUser as any);  
-router.post("/:id/profile-picture", imageUpload.single("image"),authorizeUser, UserController.updateUserProfilePicture as any)
-router.delete("/:id", authorizeUser, UserController.deleteUserProfilePicture as any); 
-router.get("", authorizeUser, UserController.getCurrentUser as any); 
+router.put("/edit", authorizeUser, UserController.editUser as any);
+router.post(
+  "/:id/profile-picture",
+  imageUpload.single("image"),
+  authorizeUser,
+  UserController.updateUserProfilePicture as any
+);
+router.delete(
+  "/:id",
+  authorizeUser,
+  UserController.deleteUserProfilePicture as any
+);
+router.get("", authorizeUser, UserController.getCurrentUser as any);
 
 export default router;
