@@ -40,7 +40,7 @@ export const deleteBeneficiaryController = async (
     const beneficiaryId = req.params.beneficiaryId;
     const beneficiary = await deleteBeneficiary(beneficiaryId, req.user);
 
-    return successHandler(res, "Beneficiary saved successfully", beneficiary);
+    return successHandler(res, "Beneficiary deleted successfully", beneficiary);
   } catch (error: any) {
     console.log(error);
     return errorHandler(res, error.message || "Could not save beneficiary");

@@ -12,11 +12,14 @@ export interface IFundWalletPayload {
 }
 
 export interface IWithdrawFundPayload
-  extends Pick<IFundWalletPayload, "amount"> {}
+  extends Pick<IFundWalletPayload, "amount"> {
+    wallet_pin: string;
+  }
 
 export interface IGetUserWalletResponse {
   _id: string;
   wallet_id: string;
+  wallet_name: string;
   balance: number;
   status: string;
 }

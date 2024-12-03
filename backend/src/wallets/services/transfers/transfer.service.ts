@@ -18,6 +18,7 @@ import { sendEMail } from "../../../utils/emails/send-email";
 import { Wallet } from "../../../wallets/models/wallet.model";
 import { appEmitter } from "../../../globals/events";
 import { WALLET_EVENTS } from "../../../wallets/events/wallets.events";
+import { validateWalletPin } from "../wallet-pin.service";
 
 /**
  * Calculates the transfer charge based on the amount.
@@ -32,6 +33,7 @@ import { WALLET_EVENTS } from "../../../wallets/events/wallets.events";
  */
 export const calculateCharge = (amount: number): ITransferChargeResponse => {
   let charge = 0;
+  let creditCharge = 0;
 
   if (amount < 25000) {
     charge = 10.76; // Charge for amounts less than 25,000 Naira
@@ -43,11 +45,17 @@ export const calculateCharge = (amount: number): ITransferChargeResponse => {
     charge = 100.0; // Charge for amounts greater than or equal to 100,000 Naira
   }
 
+  // for credit
+  if (amount > 10000) {
+    creditCharge = 50.00
+  } 
+
   // Return both the charge and the new amount (amount + charge)
   const newAmountWithCharge = amount + charge;
   return {
     charge,
     newAmountWithCharge,
+    creditCharge
   };
 };
 
@@ -71,7 +79,15 @@ export const transferFunds = async (
   session.startTransaction();
 
   try {
-    const { charge, newAmountWithCharge } = calculateCharge(payload.amount);
+    const { charge, newAmountWithCharge, creditCharge } = calculateCharge(payload.amount);
+    
+    // validate wallet pin
+
+    const validatePin = await validateWalletPin(payload.wallet_pin, user, session);
+
+    if (!validatePin) {
+      throw new Error("Incorrect pin");
+    }
     // Debit the user's wallet
     const debitUserWallet = await debitWalletService(
       user,
@@ -82,8 +98,9 @@ export const transferFunds = async (
     const recipientWallet = await Wallet.findOne({
       wallet_id: payload.receipientId,
     })
-      .populate<{ user: IUser }>("user")
-      .orFail();
+      .populate<{ user: IUser }>("user");
+
+      if (!recipientWallet) throw new Error("'Unknown wallet id'")
 
     // Get the recipient's user details
     const recipient = recipientWallet.user;
@@ -180,7 +197,6 @@ export const transferFunds = async (
     // Abort the transaction in case of error
     await session.abortTransaction();
     session.endSession();
-
     console.log("Could not transfer funds from wallet", error);
     throw new Error(error.message || "Could not transfer funds from wallet");
   }

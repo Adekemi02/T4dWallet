@@ -59,6 +59,7 @@ export const getUserWalletController = async (
     const details: IGetUserWalletResponse = {
       _id: wallet.id,
       wallet_id: wallet.wallet_id,
+      wallet_name: wallet.wallet_name,
       balance: parseFloat(wallet.balance.toString()),
       status: wallet.status,
     };

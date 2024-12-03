@@ -48,9 +48,9 @@ export const saveNewBeneficiary = async (
     });
 
     return await saveNewBeneficiary.save();
-  } catch (error) {
-    console.log("Could save new beneficiary:", error);
-    throw new Error("Could save new beneficiary");
+  } catch (error: any) {
+    console.log("Could not save new beneficiary:", error);
+    throw new Error(error.message || "Could not save new beneficiary");
   }
 };
 
@@ -70,10 +70,17 @@ export const getBeneficiaries = async (
       .where({ owner: user._id })
       .sort({ updatedAt: -1 });
 
+      console.log(beneficiaries);
+      
+
+      if (!beneficiaries || beneficiaries.length === 0) {
+        throw new Error("No beneficiary found")
+      }
+
     return beneficiaries;
-  } catch (error) {
+  } catch (error: any) {
     console.log("failed to get beneficiaries:", error);
-    throw new Error("failed to get beneficiaries");
+    throw new Error(error.message || "failed to get beneficiaries");
   }
 };
 
@@ -95,9 +102,9 @@ export const getBeneficiaryById = async (
     );
 
     return beneficiary;
-  } catch (error) {
+  } catch (error: any) {
     console.log("failed to get beneficiary details:", error);
-    throw new Error("failed to get beneficiary details");
+    throw new Error(error.message || "failed to get beneficiary details");
   }
 };
 
@@ -119,9 +126,9 @@ export const deleteBeneficiary = async (
     await beneficiary.deleteOne();
 
     return true;
-  } catch (error) {
+  } catch (error: any) {
     console.log("failed to delete beneficiary:", error);
-    throw new Error("failed to delete beneficiary");
+    throw new Error(error.message || "failed to delete beneficiary");
   }
 };
 
@@ -151,10 +158,14 @@ export const searchBeneficiaries = async (
 
     // Perform the search query
     const beneficiaries = await Beneficiary.find(searchFilter).exec();
+    
+    if (!beneficiaries || beneficiaries.length === 0) {
+      throw new Error("No beneficiary found")
+    }
 
     return beneficiaries;
-  } catch (error) {
+  } catch (error: any) {
     console.error("Error searching beneficiaries:", error);
-    throw new Error("Failed to search beneficiaries");
+    throw new Error(error.message || "Failed to search beneficiaries");
   }
 };

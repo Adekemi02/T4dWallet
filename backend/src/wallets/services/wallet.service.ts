@@ -19,6 +19,7 @@ import { createTransaction } from "../../transactions/services/transaction.servi
 import { TransactionCategory } from "../../transactions/interfaces/transaction.interface";
 import { IMailData } from "../../utils/emails/types";
 import { sendEMail } from "../../utils/emails/send-email";
+import { validateWalletPin } from "./wallet-pin.service";
 
 /**
  * Creates a new wallet for the user if it doesn't already exist. If the user already has a wallet,
@@ -34,8 +35,8 @@ export const createWalletService = async (user: IUser): Promise<IWallet> => {
     const walletExists = await Wallet.findOne().where({ user: user._id });
 
     if (!!walletExists) {
-      console.log('user already has a wallet');
-      
+      console.log("user already has a wallet");
+
       return walletExists;
     }
 
@@ -55,9 +56,9 @@ export const createWalletService = async (user: IUser): Promise<IWallet> => {
     });
 
     return newWallet;
-  } catch (error) {
+  } catch (error: any) {
     console.log("could not create new wallet", error);
-    throw new Error("could not create new wallet");
+    throw new Error(error.message || "could not create new wallet");
   }
 };
 
@@ -165,9 +166,9 @@ export const creditWalletService = async (
       prev_wallet: previousWallet,
       curr_wallet: updatedWallet,
     };
-  } catch (error) {
+  } catch (error: any) {
     console.log("Could not credit wallet:", error);
-    throw new Error("Could not credit wallet");
+    throw new Error(error.message || "Could not credit wallet");
   }
 };
 
@@ -227,13 +228,13 @@ export const fundWalletService = async (
     session.endSession();
 
     return creditUser.curr_wallet;
-  } catch (error) {
+  } catch (error: any) {
     // Rollback the transaction on error
     await session.abortTransaction();
     session.endSession();
 
     console.error("Could not fund wallet:", error);
-    throw new Error("Could not fund wallet");
+    throw new Error(error.message || "Could not fund wallet");
   }
 };
 
@@ -255,6 +256,17 @@ export const withdrawFundService = async (
   session.startTransaction();
 
   try {
+    // validate wallet pin
+
+    const validatePin = await validateWalletPin(
+      payload.wallet_pin,
+      user,
+      session
+    );
+
+    if (!validatePin) {
+      throw new Error("Incorrect pin");
+    }
     const debitUser = await debitWalletService(user, payload.amount, session);
 
     // Log the transaction
@@ -289,13 +301,13 @@ export const withdrawFundService = async (
     session.endSession();
 
     return debitUser.curr_wallet;
-  } catch (error) {
+  } catch (error: any) {
     // Rollback the transaction on error
     await session.abortTransaction();
     session.endSession();
 
     console.error("could not debit wallet:", error);
-    throw new Error("could not debit wallet");
+    throw new Error(error.message || "could not debit wallet");
   }
 };
 
@@ -314,9 +326,9 @@ export const getUserWallet = async (userId: string): Promise<IWallet> => {
     if (!wallet) throw new Error("User does not have a wallet");
 
     return wallet;
-  } catch (error) {
+  } catch (error: any) {
     console.log("Could not get user wallet:", error);
-    throw new Error("Could not get user wallet");
+    throw new Error(error.message || "Could not get user wallet");
   }
 };
 
@@ -335,9 +347,9 @@ export const getWalletById = async (walletId: string): Promise<IWallet> => {
     if (!wallet) throw new Error("Wallet does not exist");
 
     return wallet;
-  } catch (error) {
+  } catch (error: any) {
     console.log("Could not resolve wallet:", error);
-    throw new Error("Could not resolve wallet");
+    throw new Error(error.message || "Could not resolve wallet");
   }
 };
 

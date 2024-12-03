@@ -24,8 +24,8 @@ app.use("/api/v1/wallet", walletRouter);
 app.use("/api/v1/beneficiaries", beneficiaryRouter);
 
 // Define a route
-app.get("/", (req, res) => {
-  res.send("Hello, World!");
+app.get("/api/v1/", (req, res) => {
+  res.send("Hello, Wallet user!");
 });
 
 // Start the server

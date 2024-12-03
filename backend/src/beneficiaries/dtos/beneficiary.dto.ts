@@ -1,13 +1,13 @@
-import { IsEnum, IsNotEmpty, IsString, MaxLength } from "class-validator";
+import { IsEnum, IsNotEmpty, IsOptional, IsString, MaxLength } from "class-validator";
 
 export class NewBeneficiaryDTO {
   @IsNotEmpty()
   @IsString()
   walletId: string;
 
-  @IsNotEmpty()
-  @IsString()
+  @IsOptional()
   @MaxLength(15)
+  @IsString()
   alias: string;
 }
 

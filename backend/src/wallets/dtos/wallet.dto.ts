@@ -5,8 +5,9 @@ import {
   IsString,
   MinLength,
 } from "class-validator";
+import { SetWalletPinDTO } from "./wallet-pin.dto";
 
-export class WithdrawFundDTO {
+export class WithdrawFundDTO extends SetWalletPinDTO {
   @IsNotEmpty()
   @IsNumber()
   amount: number;

@@ -7,6 +7,7 @@ import { IUser } from "../../auth/models/user.model";
 import { Wallet } from "../models/wallet.model";
 import bcrypt from "bcrypt";
 import { IUpdateWalletPinPayload } from "../types/wallet.types";
+import mongoose from "mongoose";
 
 /**
  * Sets a new PIN for the user's wallet. The new PIN is hashed before being saved.
@@ -102,10 +103,11 @@ export const changeWalletPin = async (
 
 export const validateWalletPin = async (
   walletPin: string,
-  user: IUser
+  user: IUser,
+  session?: mongoose.ClientSession
 ): Promise<boolean> => {
   try {
-    const wallet = await Wallet.findOne({ user: user._id }).orFail();
+    const wallet = await Wallet.findOne({ user: user._id }).session(session).orFail();
 
     if (wallet.wallet_pin === "") {
       throw new Error("User has not set pin for wallet");
@@ -116,6 +118,9 @@ export const validateWalletPin = async (
     console.log(walletPin, result);
     
 
+    // if (!result) {
+    //  return false
+    // }
     if (!result) {
       throw new Error("Invalid PIN");
     }
@@ -123,6 +128,6 @@ export const validateWalletPin = async (
     return true;
   } catch (error: any) {
     console.log("Could not validate wallet pin:", error);
-    throw new Error(error.message || "Could not validate wallet pin");
+    throw new Error(error.message || false);
   }
 };
